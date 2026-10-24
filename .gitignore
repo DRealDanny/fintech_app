@@ -1,43 +1,67 @@
-# Miscellaneous
+# Miscellaneous & Temporary Files
 *.class
-*.lock
 *.log
 *.pyc
 *.swp
+*.bak
+*.tmp
+*~
 .buildlog/
 .history
+.svn/
+migrate_working_dir/
 
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+ehthumbs_vista.db
+Thumbs.db
+Thumbs.db:encryptable
+desktop.ini
+$RECYCLE.BIN/
 
+# IDE & Editor Files
+# Android Studio / IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
 
-# Flutter repo-specific
-/bin/cache/
-/bin/internal/bootstrap.bat
-/bin/internal/bootstrap.sh
-/bin/mingit/
-/dev/benchmarks/mega_gallery/
-/dev/bots/.recipe_deps
-/dev/bots/android_tools/
-/dev/devicelab/ABresults*.json
-/dev/docs/doc/
-/dev/docs/flutter.docs.zip
-/dev/docs/lib/
-/dev/docs/pubspec.yaml
-/dev/integration_tests/**/xcuserdata
-/dev/integration_tests/**/Pods
-/packages/flutter/coverage/
-version
-analysis_benchmark.json
+# Visual Studio Code
+.vscode/
 
-# packages file containing multi-root paths
-.packages.generated
+# JetBrains Fleet
+.fleet/
 
-# Flutter/Dart/Pub related
+# Sensitive Credentials & Secrets (Critical for Fintech Apps)
+.env
+.env.*
+*.env
+*.keystore
+*.jks
+*.p12
+*.pfx
+*.pem
+*.cer
+*.crt
+*.key
+*.mobileprovision
+key.properties
+**/android/key.properties
+local.properties
+**/android/local.properties
+
+# Flutter / Dart / Pub
 **/doc/api/
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
-**/generated_plugin_registrant.dart
 .packages
+.packages.generated
 .pub-preload-cache/
 .pub/
 build/
@@ -45,19 +69,23 @@ flutter_*.png
 linked_*.ds
 unlinked.ds
 unlinked_spec.ds
+**/generated_plugin_registrant.dart
+
+# Symbol processing related
+underpinned.*
+app.*.symbols
 
 # Android related
-**/android/**/gradle-wrapper.jar
 .gradle/
+**/android/.gradle/
+**/android/**/gradle-wrapper.jar
 **/android/captures/
 **/android/gradlew
 **/android/gradlew.bat
-**/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java
-**/android/key.properties
-*.jks
+**/android/**/.cxx/
 
-# iOS/XCode related
+# iOS / Xcode related
 **/ios/**/*.mode1v3
 **/ios/**/*.mode2v3
 **/ios/**/*.moved-aside
@@ -72,14 +100,14 @@ unlinked_spec.ds
 **/ios/**/Pods/
 **/ios/**/.symlinks/
 **/ios/**/profile
-**/ios/**/xcuserdata
+**/ios/**/xcuserdata/
 **/ios/.generated/
 **/ios/Flutter/.last_build_id
 **/ios/Flutter/App.framework
 **/ios/Flutter/Flutter.framework
 **/ios/Flutter/Flutter.podspec
 **/ios/Flutter/Generated.xcconfig
-**/ios/Flutter/ephemeral
+**/ios/Flutter/ephemeral/
 **/ios/Flutter/app.flx
 **/ios/Flutter/app.zip
 **/ios/Flutter/flutter_assets/
@@ -87,33 +115,44 @@ unlinked_spec.ds
 **/ios/ServiceDefinitions.json
 **/ios/Runner/GeneratedPluginRegistrant.*
 
-# macOS
-**/Flutter/ephemeral/
-**/Pods/
+# macOS related
+**/macos/Flutter/ephemeral/
 **/macos/Flutter/GeneratedPluginRegistrant.swift
-**/macos/Flutter/ephemeral
+**/macos/Flutter/Generated.xcconfig
+**/macos/Flutter/flutter_export_environment.sh
+**/macos/Pods/
 **/xcuserdata/
 
-# Windows
+# Windows desktop related
+**/windows/flutter/ephemeral/
 **/windows/flutter/generated_plugin_registrant.cc
 **/windows/flutter/generated_plugin_registrant.h
 **/windows/flutter/generated_plugins.cmake
+CMakeSettings.json
+*.suo
+*.user
+*.userosv
+*.sln.docstates
 
-# Linux
+# Linux desktop related
+**/linux/flutter/ephemeral/
 **/linux/flutter/generated_plugin_registrant.cc
 **/linux/flutter/generated_plugin_registrant.h
 **/linux/flutter/generated_plugins.cmake
 
-# Coverage
+# Test & Coverage
 coverage/
+*.lcov
 
-# Symbols
-app.*.symbols
+# Fastlane (Deployment)
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
 
-# Exceptions to above rules.
+# Exceptions to above rules
 !**/ios/**/default.mode1v3
 !**/ios/**/default.mode2v3
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
-!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
-!/dev/ci/**/Gemfile.lock
+!pubspec.lock
