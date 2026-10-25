@@ -142,14 +142,25 @@ dart run build_runner watch --delete-conflicting-outputs
   ```bash
   flutter run -d emulator-5554
   ```
-* **Emulator Launch Command** (if offline):
-  ```bash
-flutter emulators --launch Medium_Phone_API_37.0
-```
 
 ---
 
-## 8. Android Emulator Verification Workflow (Mobile MCP)
+## 8. Android Emulator & Windowed Mode Rules (`mobile-mcp`)
+
+1. **NEVER Run Headless:** Never launch the Android emulator with `-no-window` or headless flags. The user must be able to see the visible emulator window at all times.
+2. **Check Before Launching:** 
+   - First, run `mobile_list_available_devices`. 
+   - If `emulator-5554` is already online, attach to it directly—do NOT start a new instance.
+3. **How to Launch If Offline (Windowed Mode Only):**
+   - If no emulator is running, launch it visibly with a standalone GUI window using PowerShell:
+     ```powershell
+     Start-Process "$env:LOCALAPPDATA\Android\Sdk\emulator\emulator.exe" -ArgumentList "-avd Medium_Phone_API_37.0"
+     ```
+   - Wait for `emulator-5554` to come online, then launch the app onto it (`flutter run -d emulator-5554`).
+
+---
+
+## 9. Android Emulator Verification Workflow (Mobile MCP)
 
 Always verify your work directly inside the running Android Emulator using `mobile-mcp`:
 
@@ -159,5 +170,6 @@ Always verify your work directly inside the running Android Emulator using `mobi
    - Call `mobile_take_screenshot` to visually inspect the live Android screen for layout alignment, styling, and RenderFlex overflow stripes.
    - Call `mobile_list_elements_on_screen` to inspect interactive widgets and get their exact screen coordinates.
 4. **Interactive Testing:** Use `mobile_click_on_screen_at_coordinates`, `mobile_swipe_on_screen`, and `mobile_type_keys` to walk through the user flow on the emulator and confirm nothing crashes.
+
 
 
