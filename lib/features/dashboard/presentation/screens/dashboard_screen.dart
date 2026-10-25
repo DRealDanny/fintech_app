@@ -20,10 +20,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   bool _isBalanceVisible = true;
   int _currentNavIndex = 0;
 
-  void _onLockApp() {
-    context.router.push(const QuickUnlockRoute());
-  }
-
   void _showReceiveModal(BuildContext context) {
     final isDark = AppColors.isDarkMode(context);
     final surfElevated = AppColors.surfElevated(context);
@@ -217,12 +213,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         ),
                         tooltip: isDark ? 'Switch to Light' : 'Switch to Dark',
                       ),
-                      IconButton(
-                        onPressed: _onLockApp,
-                        icon: Icon(Icons.fingerprint_rounded,
-                            color: text, size: 26),
-                        tooltip: 'Quick Lock',
-                      ),
+                      const SizedBox(width: 4),
                       InkWell(
                         onTap: () => context.router.push(const ProfileRoute()),
                         borderRadius: BorderRadius.circular(20),
