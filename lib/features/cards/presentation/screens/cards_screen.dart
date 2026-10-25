@@ -15,20 +15,28 @@ class CardsScreen extends ConsumerWidget {
     final state = ref.watch(cardsControllerProvider);
     final card = state.activeCard;
 
+    final isDark = AppColors.isDarkMode(context);
+    final bg = AppColors.bg(context);
+    final surf = AppColors.surf(context);
+    final surfElevated = AppColors.surfElevated(context);
+    final border = AppColors.border(context);
+    final text = AppColors.text(context);
+    final textSub = AppColors.textSub(context);
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: Colors.white, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new_rounded,
+              color: text, size: 20),
           onPressed: () => context.router.maybePop(),
         ),
-        title: const Text(
+        title: Text(
           'Card Management',
           style: TextStyle(
-            color: Colors.white,
+            color: text,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -36,8 +44,8 @@ class CardsScreen extends ConsumerWidget {
         centerTitle: true,
       ),
       body: card == null
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primary))
+          ? Center(
+              child: CircularProgressIndicator(color: text))
           : SafeArea(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
@@ -64,13 +72,13 @@ class CardsScreen extends ConsumerWidget {
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
                                 color: isSelected
-                                    ? AppColors.primary
-                                    : AppColors.surface,
+                                    ? (isDark ? AppColors.pureWhite : AppColors.pureBlack)
+                                    : surf,
                                 borderRadius: BorderRadius.circular(14),
                                 border: Border.all(
                                   color: isSelected
-                                      ? AppColors.primary
-                                      : AppColors.surfaceBorder,
+                                      ? (isDark ? AppColors.pureWhite : AppColors.pureBlack)
+                                      : border,
                                 ),
                               ),
                               child: Center(
@@ -80,8 +88,8 @@ class CardsScreen extends ConsumerWidget {
                                       : '💳 Physical Card',
                                   style: TextStyle(
                                     color: isSelected
-                                        ? const Color(0xFF042018)
-                                        : Colors.white,
+                                        ? (isDark ? AppColors.pureBlack : AppColors.pureWhite)
+                                        : textSub,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 13,
                                   ),
@@ -145,9 +153,9 @@ class CardsScreen extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: AppColors.surface,
+                        color: surf,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: AppColors.surfaceBorder),
+                        border: Border.all(color: border),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,18 +163,18 @@ class CardsScreen extends ConsumerWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text(
+                              Text(
                                 'Monthly Spending Limit',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: text,
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
                                 '\$${card.spendingLimitDollars.toStringAsFixed(0)}',
-                                style: const TextStyle(
-                                  color: AppColors.primary,
+                                style: TextStyle(
+                                  color: text,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w800,
                                 ),
@@ -178,9 +186,9 @@ class CardsScreen extends ConsumerWidget {
                             value: (card.currentSpentDollars /
                                     card.spendingLimitDollars)
                                 .clamp(0.0, 1.0),
-                            backgroundColor: AppColors.surfaceBorder,
-                            valueColor: const AlwaysStoppedAnimation<Color>(
-                                AppColors.primary),
+                            backgroundColor: surfElevated,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                isDark ? AppColors.pureWhite : AppColors.pureBlack),
                             minHeight: 8,
                             borderRadius: BorderRadius.circular(4),
                           ),
@@ -190,14 +198,14 @@ class CardsScreen extends ConsumerWidget {
                             children: [
                               Text(
                                 '\$${card.currentSpentDollars.toStringAsFixed(2)} spent',
-                                style: const TextStyle(
-                                    color: AppColors.textSecondary,
+                                style: TextStyle(
+                                    color: textSub,
                                     fontSize: 12),
                               ),
                               Text(
                                 '\$${(card.spendingLimitDollars - card.currentSpentDollars).toStringAsFixed(2)} remaining',
-                                style: const TextStyle(
-                                    color: AppColors.textMuted, fontSize: 12),
+                                style: TextStyle(
+                                    color: textSub, fontSize: 12),
                               ),
                             ],
                           ),
@@ -207,8 +215,8 @@ class CardsScreen extends ConsumerWidget {
                             min: 1000.0,
                             max: 15000.0,
                             divisions: 14,
-                            activeColor: AppColors.primary,
-                            inactiveColor: AppColors.surfaceBorder,
+                            activeColor: isDark ? AppColors.pureWhite : AppColors.pureBlack,
+                            inactiveColor: border,
                             onChanged: (newVal) {
                               ref
                                   .read(cardsControllerProvider.notifier)
@@ -226,15 +234,16 @@ class CardsScreen extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 18, vertical: 8),
                       decoration: BoxDecoration(
-                        color: AppColors.surface,
+                        color: surf,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: AppColors.surfaceBorder),
+                        border: Border.all(color: border),
                       ),
                       child: Column(
                         children: [
                           _buildToggleTile(
+                            context: context,
                             icon: Icons.ac_unit_rounded,
-                            iconColor: AppColors.accentCyan,
+                            iconColor: AppColors.positiveGreen,
                             title: 'Freeze Card',
                             subtitle:
                                 'Temporarily block all purchases and withdrawals',
@@ -245,11 +254,12 @@ class CardsScreen extends ConsumerWidget {
                                   .toggleFreeze();
                             },
                           ),
-                          const Divider(
-                              color: AppColors.surfaceBorder, height: 16),
+                          Divider(
+                              color: border, height: 16),
                           _buildToggleTile(
+                            context: context,
                             icon: Icons.shopping_bag_outlined,
-                            iconColor: AppColors.accentIndigo,
+                            iconColor: isDark ? AppColors.pureWhite : AppColors.pureBlack,
                             title: 'Online Payments',
                             subtitle:
                                 'Allow web and e-commerce authorizations',
@@ -260,9 +270,10 @@ class CardsScreen extends ConsumerWidget {
                                   .toggleOnline();
                             },
                           ),
-                          const Divider(
-                              color: AppColors.surfaceBorder, height: 16),
+                          Divider(
+                              color: border, height: 16),
                           _buildToggleTile(
+                            context: context,
                             icon: Icons.public_rounded,
                             iconColor: AppColors.accentAmber,
                             title: 'International Payments',
@@ -294,33 +305,29 @@ class CardsScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         gradient: card.isFrozen
             ? const LinearGradient(
-                colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
+                colors: [Color(0xFF1E1E1E), Color(0xFF141414)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               )
             : LinearGradient(
                 colors: card.cardType == 'virtual'
-                    ? const [Color(0xFF0D3227), Color(0xFF041913)]
-                    : const [Color(0xFF1E1B4B), Color(0xFF0F0E2A)],
+                    ? const [Color(0xFF262626), Color(0xFF0F0F0F)]
+                    : const [Color(0xFF333333), Color(0xFF161616)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: card.isFrozen
-              ? AppColors.surfaceBorder
-              : (card.cardType == 'virtual'
-                  ? AppColors.primary.withValues(alpha: 0.5)
-                  : AppColors.accentIndigo.withValues(alpha: 0.5)),
+              ? AppColors.negativeRed.withValues(alpha: 0.6)
+              : AppColors.pureWhite.withValues(alpha: 0.4),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
             color: card.isFrozen
-                ? Colors.transparent
-                : (card.cardType == 'virtual'
-                    ? AppColors.primary.withValues(alpha: 0.15)
-                    : AppColors.accentIndigo.withValues(alpha: 0.15)),
+                ? AppColors.negativeRed.withValues(alpha: 0.1)
+                : const Color(0x33000000),
             blurRadius: 25,
             offset: const Offset(0, 10),
           ),
@@ -436,18 +443,18 @@ class CardsScreen extends ConsumerWidget {
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.accentCyan),
+                  border: Border.all(color: AppColors.negativeRed),
                 ),
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.ac_unit_rounded,
-                        color: AppColors.accentCyan, size: 18),
+                        color: AppColors.negativeRed, size: 18),
                     SizedBox(width: 8),
                     Text(
                       'CARD FROZEN',
                       style: TextStyle(
-                        color: AppColors.accentCyan,
+                        color: AppColors.negativeRed,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 1.5,
                         fontSize: 13,
@@ -538,6 +545,7 @@ class CardsScreen extends ConsumerWidget {
   }
 
   Widget _buildToggleTile({
+    required BuildContext context,
     required IconData icon,
     required Color iconColor,
     required String title,
@@ -545,6 +553,10 @@ class CardsScreen extends ConsumerWidget {
     required bool value,
     required Function(bool) onChanged,
   }) {
+    final text = AppColors.text(context);
+    final textSub = AppColors.textSub(context);
+    final isDark = AppColors.isDarkMode(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -565,8 +577,8 @@ class CardsScreen extends ConsumerWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: text,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
@@ -574,8 +586,8 @@ class CardsScreen extends ConsumerWidget {
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: const TextStyle(
-                    color: AppColors.textMuted,
+                  style: TextStyle(
+                    color: textSub,
                     fontSize: 11,
                   ),
                 ),
@@ -584,10 +596,10 @@ class CardsScreen extends ConsumerWidget {
           ),
           Switch(
             value: value,
-            activeThumbColor: AppColors.primary,
-            activeTrackColor: AppColors.primary.withValues(alpha: 0.3),
+            activeThumbColor: isDark ? AppColors.pureWhite : AppColors.pureBlack,
+            activeTrackColor: isDark ? AppColors.surfaceBorderLight : AppColors.lightSurfaceBorderLight,
             inactiveThumbColor: AppColors.textMuted,
-            inactiveTrackColor: AppColors.surfaceElevated,
+            inactiveTrackColor: AppColors.surfElevated(context),
             onChanged: onChanged,
           ),
         ],

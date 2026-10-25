@@ -6,6 +6,8 @@ import 'core/router/app_router.dart';
 import 'core/router/app_router.gr.dart';
 import 'core/storage/hive_storage.dart';
 
+import 'core/theme/theme_controller.dart';
+
 final appRouter = AppRouter();
 
 void main() async {
@@ -14,16 +16,6 @@ void main() async {
   // Initialize Hive storage for local cache & session persistence
   await HiveStorage.init();
 
-  // Set system UI overlay style for dark fintech aesthetic
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-      systemNavigationBarColor: Color(0xFF090D16),
-      systemNavigationBarIconBrightness: Brightness.light,
-    ),
-  );
-
   runApp(
     const ProviderScope(
       child: FintechApp(),
@@ -31,14 +23,15 @@ void main() async {
   );
 }
 
-class FintechApp extends StatefulWidget {
+class FintechApp extends ConsumerStatefulWidget {
   const FintechApp({super.key});
 
   @override
-  State<FintechApp> createState() => _FintechAppState();
+  ConsumerState<FintechApp> createState() => _FintechAppState();
 }
 
-class _FintechAppState extends State<FintechApp> with WidgetsBindingObserver {
+class _FintechAppState extends ConsumerState<FintechApp>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -68,10 +61,28 @@ class _FintechAppState extends State<FintechApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeControllerProvider);
+    final isDark = themeMode == ThemeMode.dark;
+
+    // Adjust system status bar icons based on active theme
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness:
+            isDark ? Brightness.light : Brightness.dark,
+        systemNavigationBarColor:
+            isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
+        systemNavigationBarIconBrightness:
+            isDark ? Brightness.light : Brightness.dark,
+      ),
+    );
+
     return MaterialApp.router(
       title: 'Nova Fintech',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeMode,
       routerConfig: appRouter.config(),
     );
   }

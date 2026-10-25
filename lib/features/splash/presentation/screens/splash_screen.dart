@@ -91,7 +91,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   child: const Center(
                     child: Icon(
                       Icons.account_balance_wallet_rounded,
-                      color: Color(0xFF042018),
+                      color: AppColors.pureBlack,
                       size: 46,
                     ),
                   ),

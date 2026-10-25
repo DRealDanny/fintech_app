@@ -115,7 +115,7 @@ class _QuickUnlockScreenState extends ConsumerState<QuickUnlockScreen> {
                       child: Text(
                         'D',
                         style: TextStyle(
-                          color: Color(0xFF042018),
+                          color: AppColors.pureBlack,
                           fontSize: 32,
                           fontWeight: FontWeight.w900,
                         ),

@@ -11,10 +11,10 @@ class HiveStorage {
   static const String beneficiariesBoxName = 'beneficiaries_cache';
   static const String cardsBoxName = 'cards_cache';
 
-  // Box Keys
   static const String keyHasCompletedOnboarding = 'has_completed_onboarding';
   static const String keyIsLoggedIn = 'is_logged_in';
   static const String keyIsBiometricEnabled = 'is_biometric_enabled';
+  static const String keyIsDarkMode = 'is_dark_mode';
   static const String keyWalletBalanceCents = 'wallet_balance_cents';
 
   static Future<void> init() async {
@@ -67,6 +67,17 @@ class HiveStorage {
   static Future<void> setIsBiometricEnabled(bool value) async {
     if (Hive.isBoxOpen(appSettingsBoxName)) {
       await _settingsBox.put(keyIsBiometricEnabled, value);
+    }
+  }
+
+  static bool get isDarkMode {
+    if (!Hive.isBoxOpen(appSettingsBoxName)) return true;
+    return _settingsBox.get(keyIsDarkMode, defaultValue: true) as bool;
+  }
+
+  static Future<void> setIsDarkMode(bool value) async {
+    if (Hive.isBoxOpen(appSettingsBoxName)) {
+      await _settingsBox.put(keyIsDarkMode, value);
     }
   }
 

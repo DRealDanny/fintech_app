@@ -57,12 +57,12 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
       backgroundColor: Colors.transparent,
       builder: (bottomSheetContext) {
         return StatefulBuilder(
-          builder: (context, setModalState) {
+          builder: (modalContext, setModalState) {
             return Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-              decoration: const BoxDecoration(
-                color: AppColors.surfaceElevated,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+              decoration: BoxDecoration(
+                color: AppColors.surfElevated(modalContext),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
               ),
               child: SafeArea(
                 child: Column(
@@ -72,15 +72,15 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceBorder,
+                        color: AppColors.border(modalContext),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
                     const SizedBox(height: 20),
-                    const Text(
+                    Text(
                       'Confirm Transfer',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.text(modalContext),
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
@@ -88,8 +88,8 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'Sending \$${(state.amountCents / 100).toStringAsFixed(2)} to ${state.selectedBeneficiary!.name}',
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
+                      style: TextStyle(
+                        color: AppColors.textSub(modalContext),
                         fontSize: 14,
                       ),
                     ),
@@ -110,7 +110,7 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                             border: Border.all(
                               color: filled
                                   ? AppColors.primary
-                                  : AppColors.surfaceBorder,
+                                  : AppColors.border(modalContext),
                               width: 2,
                             ),
                           ),
@@ -121,6 +121,7 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
 
                     // Numeric Keypad
                     _buildModalKeypad(
+                      context: modalContext,
                       onKeyTap: (digit) async {
                         if (enteredPin.length < 4) {
                           setModalState(() {
@@ -133,7 +134,7 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                                 .executeTransferWithPin(enteredPin);
 
                             if (context.mounted) {
-                              Navigator.pop(context); // Close PIN modal
+                              Navigator.pop(bottomSheetContext); // Close PIN modal
                               if (success) {
                                 final updatedState =
                                     ref.read(transferControllerProvider);
@@ -147,7 +148,7 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                                     .errorMessage;
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    backgroundColor: AppColors.surface,
+                                    backgroundColor: AppColors.surf(context),
                                     content: Text(
                                       err ?? 'Transfer authorization failed.',
                                       style: const TextStyle(
@@ -186,7 +187,7 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
       barrierDismissible: false,
       builder: (dialogCtx) {
         return Dialog(
-          backgroundColor: AppColors.surfaceElevated,
+          backgroundColor: AppColors.surfElevated(dialogCtx),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           child: Padding(
             padding: const EdgeInsets.all(24.0),
@@ -211,10 +212,10 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   'Transfer Successful!',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.text(dialogCtx),
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
                   ),
@@ -222,8 +223,8 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                 const SizedBox(height: 6),
                 Text(
                   'Transaction Reference: ${receipt.referenceNumber}',
-                  style: const TextStyle(
-                    color: AppColors.textMuted,
+                  style: TextStyle(
+                    color: AppColors.textSub(dialogCtx),
                     fontSize: 12,
                   ),
                 ),
@@ -231,23 +232,23 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: AppColors.surf(dialogCtx),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.surfaceBorder),
+                    border: Border.all(color: AppColors.border(dialogCtx)),
                   ),
                   child: Column(
                     children: [
-                      _buildReceiptRow('Amount Sent',
+                      _buildReceiptRow(dialogCtx, 'Amount Sent',
                           currencyFmt.format(receipt.amountDollars),
                           isBold: true, color: AppColors.primary),
-                      const Divider(color: AppColors.surfaceBorder, height: 20),
-                      _buildReceiptRow('Recipient', receipt.recipientName),
+                      Divider(color: AppColors.border(dialogCtx), height: 20),
+                      _buildReceiptRow(dialogCtx, 'Recipient', receipt.recipientName),
                       const SizedBox(height: 8),
-                      _buildReceiptRow('Account', receipt.recipientAccount),
+                      _buildReceiptRow(dialogCtx, 'Account', receipt.recipientAccount),
                       const SizedBox(height: 8),
-                      _buildReceiptRow('Fee', '\$0.00 (Nova Free Transfer)'),
+                      _buildReceiptRow(dialogCtx, 'Fee', '\$0.00 (Nova Free Transfer)'),
                       const SizedBox(height: 8),
-                      _buildReceiptRow('Note', receipt.note),
+                      _buildReceiptRow(dialogCtx, 'Note', receipt.note),
                     ],
                   ),
                 ),
@@ -257,12 +258,13 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
+                      final router = context.router;
                       Navigator.pop(dialogCtx); // Close modal
-                      context.router.maybePop(); // Return to dashboard
+                      router.maybePop(); // Return to dashboard
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: const Color(0xFF042018),
+                      backgroundColor: AppColors.btn(dialogCtx),
+                      foregroundColor: AppColors.onBtn(dialogCtx),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -284,19 +286,19 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
     );
   }
 
-  Widget _buildReceiptRow(String label, String value,
+  Widget _buildReceiptRow(BuildContext context, String label, String value,
       {bool isBold = false, Color? color}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+          style: TextStyle(color: AppColors.textSub(context), fontSize: 13),
         ),
         Text(
           value,
           style: TextStyle(
-            color: color ?? Colors.white,
+            color: color ?? AppColors.text(context),
             fontSize: 13,
             fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
           ),
@@ -306,22 +308,23 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
   }
 
   Widget _buildModalKeypad({
+    required BuildContext context,
     required Function(String) onKeyTap,
     required VoidCallback onBackspace,
   }) {
     return Column(
       children: [
-        _buildKeypadRow(['1', '2', '3'], onKeyTap),
+        _buildKeypadRow(context, ['1', '2', '3'], onKeyTap),
         const SizedBox(height: 12),
-        _buildKeypadRow(['4', '5', '6'], onKeyTap),
+        _buildKeypadRow(context, ['4', '5', '6'], onKeyTap),
         const SizedBox(height: 12),
-        _buildKeypadRow(['7', '8', '9'], onKeyTap),
+        _buildKeypadRow(context, ['7', '8', '9'], onKeyTap),
         const SizedBox(height: 12),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             const SizedBox(width: 60),
-            _buildKeypadButton('0', onKeyTap),
+            _buildKeypadButton(context, '0', onKeyTap),
             InkWell(
               onTap: onBackspace,
               borderRadius: BorderRadius.circular(30),
@@ -329,8 +332,8 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                 width: 60,
                 height: 60,
                 alignment: Alignment.center,
-                child: const Icon(Icons.backspace_outlined,
-                    color: Colors.white, size: 22),
+                child: Icon(Icons.backspace_outlined,
+                    color: AppColors.text(context), size: 22),
               ),
             ),
           ],
@@ -339,14 +342,17 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
     );
   }
 
-  Widget _buildKeypadRow(List<String> values, Function(String) onKeyTap) {
+  Widget _buildKeypadRow(
+      BuildContext context, List<String> values, Function(String) onKeyTap) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: values.map((val) => _buildKeypadButton(val, onKeyTap)).toList(),
+      children:
+          values.map((val) => _buildKeypadButton(context, val, onKeyTap)).toList(),
     );
   }
 
-  Widget _buildKeypadButton(String value, Function(String) onKeyTap) {
+  Widget _buildKeypadButton(
+      BuildContext context, String value, Function(String) onKeyTap) {
     return InkWell(
       onTap: () => onKeyTap(value),
       borderRadius: BorderRadius.circular(30),
@@ -355,14 +361,14 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
         height: 60,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: AppColors.surface,
-          border: Border.all(color: AppColors.surfaceBorder),
+          color: AppColors.surf(context),
+          border: Border.all(color: AppColors.border(context)),
         ),
         alignment: Alignment.center,
         child: Text(
           value,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: AppColors.text(context),
             fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
@@ -377,19 +383,19 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
     final availableDollars = state.balanceCents / 100.0;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.bg(context),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: Colors.white, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new_rounded,
+              color: AppColors.text(context), size: 20),
           onPressed: () => context.router.maybePop(),
         ),
-        title: const Text(
+        title: Text(
           'Send Money',
           style: TextStyle(
-            color: Colors.white,
+            color: AppColors.text(context),
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -407,17 +413,17 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  color: AppColors.surf(context),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.surfaceBorder),
+                  border: Border.all(color: AppColors.border(context)),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Available Balance',
                       style: TextStyle(
-                          color: AppColors.textSecondary, fontSize: 13),
+                          color: AppColors.textSub(context), fontSize: 13),
                     ),
                     Text(
                       '\$${availableDollars.toStringAsFixed(2)}',
@@ -434,10 +440,10 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
               const SizedBox(height: 24),
 
               // Recipients Selector Header
-              const Text(
+              Text(
                 'Select Recipient',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.text(context),
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                 ),
@@ -468,12 +474,12 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                         decoration: BoxDecoration(
                           color: isSelected
                               ? AppColors.primary.withValues(alpha: 0.12)
-                              : AppColors.surface,
+                              : AppColors.surf(context),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: isSelected
                                 ? AppColors.primary
-                                : AppColors.surfaceBorder,
+                                : AppColors.border(context),
                             width: isSelected ? 1.8 : 1,
                           ),
                         ),
@@ -502,7 +508,9 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                             Text(
                               ben.name.split(' ').first,
                               style: TextStyle(
-                                color: isSelected ? Colors.white : AppColors.textSecondary,
+                                color: isSelected
+                                    ? AppColors.text(context)
+                                    : AppColors.textSub(context),
                                 fontSize: 11,
                                 fontWeight: isSelected
                                     ? FontWeight.bold
@@ -524,16 +532,16 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  color: AppColors.surf(context),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.surfaceBorder),
+                  border: Border.all(color: AppColors.border(context)),
                 ),
                 child: Column(
                   children: [
-                    const Text(
+                    Text(
                       'Enter Amount',
                       style: TextStyle(
-                        color: AppColors.textSecondary,
+                        color: AppColors.textSub(context),
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
@@ -558,15 +566,15 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                             controller: _amountController,
                             keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true),
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: AppColors.text(context),
                               fontSize: 42,
                               fontWeight: FontWeight.w900,
                             ),
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               hintText: '0.00',
                               hintStyle: TextStyle(
-                                color: AppColors.textMuted,
+                                color: AppColors.textSub(context).withValues(alpha: 0.4),
                                 fontSize: 42,
                                 fontWeight: FontWeight.w900,
                               ),
@@ -590,14 +598,14 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
-                              color: AppColors.surfaceElevated,
+                              color: AppColors.surfElevated(context),
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: AppColors.surfaceBorder),
+                              border: Border.all(color: AppColors.border(context)),
                             ),
                             child: Text(
                               '\$${amt.toInt()}',
-                              style: const TextStyle(
-                                color: AppColors.textSecondary,
+                              style: TextStyle(
+                                color: AppColors.textSub(context),
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -615,21 +623,21 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
               // Note / Purpose Input
               TextField(
                 controller: _noteController,
-                style: const TextStyle(color: Colors.white, fontSize: 14),
+                style: TextStyle(color: AppColors.text(context), fontSize: 14),
                 decoration: InputDecoration(
                   hintText: 'What\'s this for? (Optional note)',
-                  hintStyle: const TextStyle(color: AppColors.textMuted),
+                  hintStyle: TextStyle(color: AppColors.textSub(context)),
                   filled: true,
-                  fillColor: AppColors.surface,
-                  prefixIcon: const Icon(Icons.edit_note_rounded,
-                      color: AppColors.textSecondary),
+                  fillColor: AppColors.surf(context),
+                  prefixIcon: Icon(Icons.edit_note_rounded,
+                      color: AppColors.textSub(context)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(color: AppColors.surfaceBorder),
+                    borderSide: BorderSide(color: AppColors.border(context)),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(color: AppColors.surfaceBorder),
+                    borderSide: BorderSide(color: AppColors.border(context)),
                   ),
                 ),
                 onChanged: (val) {
@@ -646,8 +654,8 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                 child: ElevatedButton(
                   onPressed: () => _showPinConfirmationModal(context, state),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: const Color(0xFF042018),
+                    backgroundColor: AppColors.btn(context),
+                    foregroundColor: AppColors.onBtn(context),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),

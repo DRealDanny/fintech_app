@@ -18,6 +18,10 @@ import '../../features/auth/presentation/screens/quick_unlock_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/transfer/presentation/screens/transfer_screen.dart';
 import '../../features/cards/presentation/screens/cards_screen.dart';
+import '../../features/transactions/presentation/screens/transactions_history_screen.dart';
+import '../../features/bills/presentation/screens/bill_payment_screen.dart';
+import '../../features/fx/presentation/screens/fx_exchange_screen.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
 
 /// generated route for [SplashScreen]
 class SplashRoute extends PageRouteInfo<void> {
@@ -178,3 +182,68 @@ class CardsRoute extends PageRouteInfo<void> {
     builder: (data) => const CardsScreen(),
   );
 }
+
+/// generated route for [TransactionsHistoryScreen]
+class TransactionsHistoryRoute extends PageRouteInfo<void> {
+  const TransactionsHistoryRoute({List<PageRouteInfo>? children})
+      : super(
+          TransactionsHistoryRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'TransactionsHistoryRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) => const TransactionsHistoryScreen(),
+  );
+}
+
+/// generated route for [BillPaymentScreen]
+class BillPaymentRoute extends PageRouteInfo<void> {
+  const BillPaymentRoute({List<PageRouteInfo>? children})
+      : super(
+          BillPaymentRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'BillPaymentRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) => const BillPaymentScreen(),
+  );
+}
+
+/// generated route for [FxExchangeScreen]
+class FxExchangeRoute extends PageRouteInfo<void> {
+  const FxExchangeRoute({List<PageRouteInfo>? children})
+      : super(
+          FxExchangeRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'FxExchangeRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) => const FxExchangeScreen(),
+  );
+}
+
+/// generated route for [ProfileScreen]
+class ProfileRoute extends PageRouteInfo<void> {
+  const ProfileRoute({List<PageRouteInfo>? children})
+      : super(
+          ProfileRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'ProfileRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) => const ProfileScreen(),
+  );
+}
+
