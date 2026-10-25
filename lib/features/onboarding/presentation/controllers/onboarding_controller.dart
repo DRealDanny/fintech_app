@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../core/storage/hive_storage.dart';
 import '../../domain/entities/onboarding_slide.dart';
 
 /// State model for Onboarding presentation layer.
@@ -71,8 +71,7 @@ class OnboardingController extends StateNotifier<OnboardingState> {
   }
 
   Future<void> completeOnboarding() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('has_completed_onboarding', true);
+    await HiveStorage.setHasCompletedOnboarding(true);
     state = state.copyWith(isCompleted: true);
   }
 }

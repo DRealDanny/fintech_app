@@ -1,8 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../auth/presentation/controllers/auth_controller.dart';
+import '../../../../core/router/app_router.gr.dart';
+import '../../../transfer/presentation/controllers/transfer_controller.dart';
 
 @RoutePage()
 class DashboardScreen extends ConsumerStatefulWidget {
@@ -15,24 +17,106 @@ class DashboardScreen extends ConsumerStatefulWidget {
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   bool _isBalanceVisible = true;
 
-  void _onLockApp() async {
-    final success =
-        await ref.read(authControllerProvider.notifier).authenticateBiometrics();
-    if (mounted && success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: AppColors.surface,
-          content: Text(
-            '🔓 Welcome back! Authenticated with Biometrics.',
-            style: TextStyle(color: AppColors.primary),
+  void _onLockApp() {
+    context.router.push(const QuickUnlockRoute());
+  }
+
+  void _showReceiveModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
+        return Container(
+          padding: const EdgeInsets.all(24),
+          decoration: const BoxDecoration(
+            color: AppColors.surfaceElevated,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
           ),
-        ),
-      );
-    }
+          child: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceBorder,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Receive Funds',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                const Text(
+                  'Share your Nova Tag or QR code to receive payments instantly',
+                  style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Icon(
+                    Icons.qr_code_2_rounded,
+                    size: 160,
+                    color: Color(0xFF090D16),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.surfaceBorder),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Nova Tag: ',
+                        style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                      ),
+                      Text(
+                        '\$danny.nova',
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Icon(Icons.copy_rounded,
+                          color: AppColors.primary, size: 16),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final transferState = ref.watch(transferControllerProvider);
+    final availableDollars = transferState.balanceCents / 100.0;
+    final currencyFmt = NumberFormat.currency(symbol: '\$');
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -173,7 +257,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      _isBalanceVisible ? '\$28,450.00' : '••••••••',
+                      _isBalanceVisible
+                          ? currencyFmt.format(availableDollars)
+                          : '••••••••',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 34,
@@ -221,14 +307,44 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
               const SizedBox(height: 24),
 
-              // Action Buttons Row (Send, Receive, Add Money, Analytics)
+              // Action Buttons Row (Send, Receive, Cards, Analytics)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildActionButton(Icons.arrow_upward_rounded, 'Send', AppColors.primary),
-                  _buildActionButton(Icons.arrow_downward_rounded, 'Receive', AppColors.accentCyan),
-                  _buildActionButton(Icons.add_rounded, 'Add Money', AppColors.accentIndigo),
-                  _buildActionButton(Icons.pie_chart_outline_rounded, 'Analytics', AppColors.accentAmber),
+                  _buildActionButton(
+                    icon: Icons.arrow_upward_rounded,
+                    label: 'Send',
+                    color: AppColors.primary,
+                    onTap: () => context.router.push(const TransferRoute()),
+                  ),
+                  _buildActionButton(
+                    icon: Icons.arrow_downward_rounded,
+                    label: 'Receive',
+                    color: AppColors.accentCyan,
+                    onTap: () => _showReceiveModal(context),
+                  ),
+                  _buildActionButton(
+                    icon: Icons.credit_card_rounded,
+                    label: 'Cards',
+                    color: AppColors.accentIndigo,
+                    onTap: () => context.router.push(const CardsRoute()),
+                  ),
+                  _buildActionButton(
+                    icon: Icons.pie_chart_outline_rounded,
+                    label: 'Analytics',
+                    color: AppColors.accentAmber,
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          backgroundColor: AppColors.surface,
+                          content: Text(
+                            '📊 Smart Analytics: Yield performance +5.2% APY',
+                            style: TextStyle(color: AppColors.accentAmber),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
 
@@ -260,7 +376,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
               const SizedBox(height: 16),
 
-              // Transactions List
+              // If a recent transfer was made, show it at the top
+              if (transferState.lastReceipt != null)
+                _buildTransactionTile(
+                  icon: Icons.send_rounded,
+                  title: transferState.lastReceipt!.recipientName,
+                  subtitle: 'Nova Transfer • ${transferState.lastReceipt!.note}',
+                  amount: '-\$${transferState.lastReceipt!.amountDollars.toStringAsFixed(2)}',
+                  isNegative: true,
+                  highlight: true,
+                ),
+
+              // Standard Transactions List
               _buildTransactionTile(
                 icon: Icons.apple,
                 title: 'Apple Services',
@@ -296,32 +423,41 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
-  Widget _buildActionButton(IconData icon, String label, Color color) {
-    return Column(
-      children: [
-        Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: color.withValues(alpha: 0.3),
-              width: 1.5,
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+      child: Column(
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: color.withValues(alpha: 0.35),
+                width: 1.5,
+              ),
+            ),
+            child: Icon(icon, color: color, size: 26),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
             ),
           ),
-          child: Icon(icon, color: color, size: 26),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: const TextStyle(
-            color: AppColors.textSecondary,
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -331,6 +467,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     required String subtitle,
     required String amount,
     required bool isNegative,
+    bool highlight = false,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -338,7 +475,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(
+          color: highlight
+              ? AppColors.primary.withValues(alpha: 0.6)
+              : AppColors.surfaceBorder,
+          width: highlight ? 1.5 : 1,
+        ),
       ),
       child: Row(
         children: [
@@ -349,7 +491,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               color: AppColors.surfaceElevated,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: Colors.white, size: 22),
+            child: Icon(icon,
+                color: highlight ? AppColors.primary : Colors.white, size: 22),
           ),
           const SizedBox(width: 14),
           Expanded(

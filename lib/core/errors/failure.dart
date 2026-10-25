@@ -25,3 +25,7 @@ class AuthFailure extends Failure {
 class BiometricFailure extends Failure {
   const BiometricFailure([super.message = 'Biometric authentication was cancelled or not recognized', super.code]);
 }
+
+class ValidationFailure extends Failure {
+  const ValidationFailure([super.message = 'Validation failed', super.code]);
+}

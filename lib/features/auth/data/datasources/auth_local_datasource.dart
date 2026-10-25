@@ -10,6 +10,7 @@ abstract class AuthLocalDataSource {
   Future<bool> canCheckBiometrics();
   Future<void> setBiometricsEnabled(bool enabled);
   Future<bool> isBiometricsEnabled();
+  Future<void> clearSession();
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
@@ -75,5 +76,10 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   Future<bool> isBiometricsEnabled() async {
     final value = await secureStorage.read(key: _keyBiometricEnabled);
     return value == 'true';
+  }
+
+  @override
+  Future<void> clearSession() async {
+    await secureStorage.delete(key: _keyToken);
   }
 }

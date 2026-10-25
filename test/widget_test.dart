@@ -9,6 +9,11 @@ void main() {
         child: FintechApp(),
       ),
     );
+    await tester.pump();
+    expect(find.text('NOVA'), findsOneWidget);
+
+    // Advance past splash transition
+    await tester.pump(const Duration(milliseconds: 1300));
     await tester.pumpAndSettle();
 
     expect(find.text('NOVA'), findsOneWidget);

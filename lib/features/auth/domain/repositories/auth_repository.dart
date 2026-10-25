@@ -18,4 +18,8 @@ abstract class AuthRepository {
   Future<Either<Failure, bool>> isBiometricAvailable();
   
   Future<Either<Failure, void>> setBiometricEnabled(bool enabled);
+  
+  Future<Either<Failure, UserAuthSession?>> getActiveSession();
+
+  Future<Either<Failure, void>> logout();
 }

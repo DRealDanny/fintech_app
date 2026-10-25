@@ -2,6 +2,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
+import '../../../../core/storage/hive_storage.dart';
 import '../../data/datasources/auth_local_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/entities/user_auth_session.dart';
@@ -45,6 +46,11 @@ final saveSecurityPinUseCaseProvider = Provider<SaveSecurityPinUseCase>((ref) {
   return SaveSecurityPinUseCase(ref.watch(authRepositoryProvider));
 });
 
+final verifySecurityPinUseCaseProvider =
+    Provider<VerifySecurityPinUseCase>((ref) {
+  return VerifySecurityPinUseCase(ref.watch(authRepositoryProvider));
+});
+
 final authenticateBiometricsUseCaseProvider =
     Provider<AuthenticateBiometricsUseCase>((ref) {
   return AuthenticateBiometricsUseCase(ref.watch(authRepositoryProvider));
@@ -53,6 +59,15 @@ final authenticateBiometricsUseCaseProvider =
 final checkBiometricAvailabilityUseCaseProvider =
     Provider<CheckBiometricAvailabilityUseCase>((ref) {
   return CheckBiometricAvailabilityUseCase(ref.watch(authRepositoryProvider));
+});
+
+final getActiveSessionUseCaseProvider =
+    Provider<GetActiveSessionUseCase>((ref) {
+  return GetActiveSessionUseCase(ref.watch(authRepositoryProvider));
+});
+
+final logoutUseCaseProvider = Provider<LogoutUseCase>((ref) {
+  return LogoutUseCase(ref.watch(authRepositoryProvider));
 });
 
 // --- Presentation State & Controller ---
@@ -107,22 +122,32 @@ class AuthController extends StateNotifier<AuthState> {
   final SendOtpUseCase _sendOtpUseCase;
   final VerifyOtpUseCase _verifyOtpUseCase;
   final SaveSecurityPinUseCase _savePinUseCase;
+  final VerifySecurityPinUseCase _verifySecurityPinUseCase;
   final AuthenticateBiometricsUseCase _authBiometricsUseCase;
   final CheckBiometricAvailabilityUseCase _checkBioAvailabilityUseCase;
+  final GetActiveSessionUseCase _getActiveSessionUseCase;
+  final LogoutUseCase _logoutUseCase;
 
   AuthController({
     required SendOtpUseCase sendOtpUseCase,
     required VerifyOtpUseCase verifyOtpUseCase,
     required SaveSecurityPinUseCase savePinUseCase,
+    required VerifySecurityPinUseCase verifySecurityPinUseCase,
     required AuthenticateBiometricsUseCase authBiometricsUseCase,
     required CheckBiometricAvailabilityUseCase checkBioAvailabilityUseCase,
+    required GetActiveSessionUseCase getActiveSessionUseCase,
+    required LogoutUseCase logoutUseCase,
   })  : _sendOtpUseCase = sendOtpUseCase,
         _verifyOtpUseCase = verifyOtpUseCase,
         _savePinUseCase = savePinUseCase,
+        _verifySecurityPinUseCase = verifySecurityPinUseCase,
         _authBiometricsUseCase = authBiometricsUseCase,
         _checkBioAvailabilityUseCase = checkBioAvailabilityUseCase,
+        _getActiveSessionUseCase = getActiveSessionUseCase,
+        _logoutUseCase = logoutUseCase,
         super(const AuthState()) {
     checkBiometrics();
+    loadActiveSession();
   }
 
   void updatePhoneNumber(String number) {
@@ -156,6 +181,18 @@ class AuthController extends StateNotifier<AuthState> {
     state = state.copyWith(pinCode: '', errorMessage: null);
   }
 
+  Future<void> loadActiveSession() async {
+    final result = await _getActiveSessionUseCase();
+    result.fold(
+      (failure) => null,
+      (session) {
+        if (session != null) {
+          state = state.copyWith(session: session);
+        }
+      },
+    );
+  }
+
   Future<bool> sendOtp() async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     final result = await _sendOtpUseCase(state.fullPhoneNumber);
@@ -181,7 +218,8 @@ class AuthController extends StateNotifier<AuthState> {
         state = state.copyWith(isLoading: false, errorMessage: failure.message);
         return false;
       },
-      (session) {
+      (session) async {
+        await HiveStorage.setIsLoggedIn(true);
         state = state.copyWith(isLoading: false, session: session);
         return true;
       },
@@ -198,9 +236,29 @@ class AuthController extends StateNotifier<AuthState> {
         state = state.copyWith(isLoading: false, errorMessage: failure.message);
         return false;
       },
-      (success) {
+      (success) async {
+        await HiveStorage.setIsLoggedIn(true);
         state = state.copyWith(isLoading: false);
         return true;
+      },
+    );
+  }
+
+  Future<bool> verifyQuickPin(String pin) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    final result = await _verifySecurityPinUseCase(pin);
+
+    return result.fold(
+      (failure) {
+        state = state.copyWith(isLoading: false, errorMessage: failure.message);
+        return false;
+      },
+      (isValid) {
+        state = state.copyWith(isLoading: false);
+        if (!isValid) {
+          state = state.copyWith(errorMessage: 'Incorrect PIN. Please try again.');
+        }
+        return isValid;
       },
     );
   }
@@ -228,6 +286,12 @@ class AuthController extends StateNotifier<AuthState> {
       },
     );
   }
+
+  Future<void> logout() async {
+    await _logoutUseCase();
+    await HiveStorage.setIsLoggedIn(false);
+    state = const AuthState();
+  }
 }
 
 final authControllerProvider =
@@ -236,8 +300,11 @@ final authControllerProvider =
     sendOtpUseCase: ref.watch(sendOtpUseCaseProvider),
     verifyOtpUseCase: ref.watch(verifyOtpUseCaseProvider),
     savePinUseCase: ref.watch(saveSecurityPinUseCaseProvider),
+    verifySecurityPinUseCase: ref.watch(verifySecurityPinUseCaseProvider),
     authBiometricsUseCase: ref.watch(authenticateBiometricsUseCaseProvider),
     checkBioAvailabilityUseCase:
         ref.watch(checkBiometricAvailabilityUseCaseProvider),
+    getActiveSessionUseCase: ref.watch(getActiveSessionUseCaseProvider),
+    logoutUseCase: ref.watch(logoutUseCaseProvider),
   );
 });

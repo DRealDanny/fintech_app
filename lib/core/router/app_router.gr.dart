@@ -8,15 +8,34 @@
 // coverage:ignore-file
 
 import 'package:auto_route/auto_route.dart';
+import '../../features/splash/presentation/screens/splash_screen.dart';
 import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../features/auth/presentation/screens/phone_input_screen.dart';
 import '../../features/auth/presentation/screens/otp_verification_screen.dart';
 import '../../features/auth/presentation/screens/set_pin_screen.dart';
 import '../../features/auth/presentation/screens/biometric_setup_screen.dart';
+import '../../features/auth/presentation/screens/quick_unlock_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
+import '../../features/transfer/presentation/screens/transfer_screen.dart';
+import '../../features/cards/presentation/screens/cards_screen.dart';
 
-/// generated route for
-/// [OnboardingScreen]
+/// generated route for [SplashScreen]
+class SplashRoute extends PageRouteInfo<void> {
+  const SplashRoute({List<PageRouteInfo>? children})
+      : super(
+          SplashRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'SplashRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) => const SplashScreen(),
+  );
+}
+
+/// generated route for [OnboardingScreen]
 class OnboardingRoute extends PageRouteInfo<void> {
   const OnboardingRoute({List<PageRouteInfo>? children})
       : super(
@@ -28,14 +47,11 @@ class OnboardingRoute extends PageRouteInfo<void> {
 
   static PageInfo page = PageInfo(
     name,
-    builder: (data) {
-      return const OnboardingScreen();
-    },
+    builder: (data) => const OnboardingScreen(),
   );
 }
 
-/// generated route for
-/// [PhoneInputScreen]
+/// generated route for [PhoneInputScreen]
 class PhoneInputRoute extends PageRouteInfo<void> {
   const PhoneInputRoute({List<PageRouteInfo>? children})
       : super(
@@ -47,14 +63,11 @@ class PhoneInputRoute extends PageRouteInfo<void> {
 
   static PageInfo page = PageInfo(
     name,
-    builder: (data) {
-      return const PhoneInputScreen();
-    },
+    builder: (data) => const PhoneInputScreen(),
   );
 }
 
-/// generated route for
-/// [OtpVerificationScreen]
+/// generated route for [OtpVerificationScreen]
 class OtpVerificationRoute extends PageRouteInfo<void> {
   const OtpVerificationRoute({List<PageRouteInfo>? children})
       : super(
@@ -66,14 +79,11 @@ class OtpVerificationRoute extends PageRouteInfo<void> {
 
   static PageInfo page = PageInfo(
     name,
-    builder: (data) {
-      return const OtpVerificationScreen();
-    },
+    builder: (data) => const OtpVerificationScreen(),
   );
 }
 
-/// generated route for
-/// [SetPinScreen]
+/// generated route for [SetPinScreen]
 class SetPinRoute extends PageRouteInfo<void> {
   const SetPinRoute({List<PageRouteInfo>? children})
       : super(
@@ -85,14 +95,11 @@ class SetPinRoute extends PageRouteInfo<void> {
 
   static PageInfo page = PageInfo(
     name,
-    builder: (data) {
-      return const SetPinScreen();
-    },
+    builder: (data) => const SetPinScreen(),
   );
 }
 
-/// generated route for
-/// [BiometricSetupScreen]
+/// generated route for [BiometricSetupScreen]
 class BiometricSetupRoute extends PageRouteInfo<void> {
   const BiometricSetupRoute({List<PageRouteInfo>? children})
       : super(
@@ -104,14 +111,27 @@ class BiometricSetupRoute extends PageRouteInfo<void> {
 
   static PageInfo page = PageInfo(
     name,
-    builder: (data) {
-      return const BiometricSetupScreen();
-    },
+    builder: (data) => const BiometricSetupScreen(),
   );
 }
 
-/// generated route for
-/// [DashboardScreen]
+/// generated route for [QuickUnlockScreen]
+class QuickUnlockRoute extends PageRouteInfo<void> {
+  const QuickUnlockRoute({List<PageRouteInfo>? children})
+      : super(
+          QuickUnlockRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'QuickUnlockRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) => const QuickUnlockScreen(),
+  );
+}
+
+/// generated route for [DashboardScreen]
 class DashboardRoute extends PageRouteInfo<void> {
   const DashboardRoute({List<PageRouteInfo>? children})
       : super(
@@ -123,8 +143,38 @@ class DashboardRoute extends PageRouteInfo<void> {
 
   static PageInfo page = PageInfo(
     name,
-    builder: (data) {
-      return const DashboardScreen();
-    },
+    builder: (data) => const DashboardScreen(),
+  );
+}
+
+/// generated route for [TransferScreen]
+class TransferRoute extends PageRouteInfo<void> {
+  const TransferRoute({List<PageRouteInfo>? children})
+      : super(
+          TransferRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'TransferRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) => const TransferScreen(),
+  );
+}
+
+/// generated route for [CardsScreen]
+class CardsRoute extends PageRouteInfo<void> {
+  const CardsRoute({List<PageRouteInfo>? children})
+      : super(
+          CardsRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'CardsRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) => const CardsScreen(),
   );
 }

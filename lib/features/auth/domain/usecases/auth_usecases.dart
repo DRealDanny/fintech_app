@@ -30,6 +30,15 @@ class SaveSecurityPinUseCase {
   }
 }
 
+class VerifySecurityPinUseCase {
+  final AuthRepository repository;
+  const VerifySecurityPinUseCase(this.repository);
+
+  Future<Either<Failure, bool>> call(String pin) {
+    return repository.verifySecurityPin(pin);
+  }
+}
+
 class AuthenticateBiometricsUseCase {
   final AuthRepository repository;
   const AuthenticateBiometricsUseCase(this.repository);
@@ -45,5 +54,23 @@ class CheckBiometricAvailabilityUseCase {
 
   Future<Either<Failure, bool>> call() {
     return repository.isBiometricAvailable();
+  }
+}
+
+class GetActiveSessionUseCase {
+  final AuthRepository repository;
+  const GetActiveSessionUseCase(this.repository);
+
+  Future<Either<Failure, UserAuthSession?>> call() {
+    return repository.getActiveSession();
+  }
+}
+
+class LogoutUseCase {
+  final AuthRepository repository;
+  const LogoutUseCase(this.repository);
+
+  Future<Either<Failure, void>> call() {
+    return repository.logout();
   }
 }
