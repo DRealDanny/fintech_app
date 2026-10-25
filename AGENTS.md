@@ -144,6 +144,20 @@ dart run build_runner watch --delete-conflicting-outputs
   ```
 * **Emulator Launch Command** (if offline):
   ```bash
-  flutter emulators --launch Medium_Phone_API_37.0
-  ```
+flutter emulators --launch Medium_Phone_API_37.0
+```
+
+---
+
+## 8. Android Emulator Verification Workflow (Mobile MCP)
+
+Always verify your work directly inside the running Android Emulator using `mobile-mcp`:
+
+1. **Connect to Emulator:** Call `mobile_list_available_devices` to lock onto the active Android emulator.
+2. **Hot Reload Changes:** After editing Dart code, trigger a hot reload (or run `adb shell` / terminal reload) so the emulator reflects your latest code.
+3. **Visual & Structural Check:**
+   - Call `mobile_take_screenshot` to visually inspect the live Android screen for layout alignment, styling, and RenderFlex overflow stripes.
+   - Call `mobile_list_elements_on_screen` to inspect interactive widgets and get their exact screen coordinates.
+4. **Interactive Testing:** Use `mobile_click_on_screen_at_coordinates`, `mobile_swipe_on_screen`, and `mobile_type_keys` to walk through the user flow on the emulator and confirm nothing crashes.
+
 
