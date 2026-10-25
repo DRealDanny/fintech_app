@@ -156,3 +156,5 @@ coverage/
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
 !pubspec.lock
+# Widget Preview related
+.widget_preview/
