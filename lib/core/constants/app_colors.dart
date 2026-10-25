@@ -29,13 +29,13 @@ class AppColors {
   // Gradients
   static const LinearGradient primaryGradient = LinearGradient(
     colors: [Color(0xFF00E599), Color(0xFF059669)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
+    begin: Alignment(-1.0, -1.0),
+    end: Alignment(1.0, 1.0),
   );
 
   static const LinearGradient cardGlowGradient = LinearGradient(
     colors: [Color(0x2200E599), Color(0x05090D16)],
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
+    begin: Alignment(0.0, -1.0),
+    end: Alignment(0.0, 1.0),
   );
 }

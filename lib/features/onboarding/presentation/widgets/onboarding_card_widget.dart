@@ -62,33 +62,38 @@ class OnboardingCardWidget extends StatelessWidget {
 
             // Card Content
             Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildGraphic(context, index),
-                  const SizedBox(height: 20),
-                  // Badge pill
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: _getSlideAccentColor(index).withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: _getSlideAccentColor(index).withValues(alpha: 0.3),
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildGraphic(context, index),
+                      const SizedBox(height: 16),
+                      // Badge pill
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: _getSlideAccentColor(index).withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: _getSlideAccentColor(index).withValues(alpha: 0.3),
+                          ),
+                        ),
+                        child: Text(
+                          slide.badgeText,
+                          style: TextStyle(
+                            color: _getSlideAccentColor(index),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      slide.badgeText,
-                      style: TextStyle(
-                        color: _getSlideAccentColor(index),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ],

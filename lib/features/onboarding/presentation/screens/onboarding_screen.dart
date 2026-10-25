@@ -1,10 +1,13 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/router/app_router.gr.dart';
 import '../controllers/onboarding_controller.dart';
 import '../widgets/onboarding_card_widget.dart';
 
+@RoutePage()
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -30,20 +33,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   void _onNextPressed(OnboardingState state) {
     if (state.isLastPage) {
       ref.read(onboardingControllerProvider.notifier).completeOnboarding();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: AppColors.surface,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: const BorderSide(color: AppColors.primary, width: 1),
-          ),
-          content: const Text(
-            '🎉 Onboarding Complete! Welcome to Next-Gen Fintech.',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-          ),
-        ),
-      );
+      context.router.push(const PhoneInputRoute());
     } else {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 350),

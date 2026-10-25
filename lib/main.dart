@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
-import 'features/onboarding/presentation/screens/onboarding_screen.dart';
+import 'core/router/app_router.dart';
+
+final appRouter = AppRouter();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,11 +31,11 @@ class FintechApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Nova Fintech',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
-      home: const OnboardingScreen(),
+      routerConfig: appRouter.config(),
     );
   }
 }

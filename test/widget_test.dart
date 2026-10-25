@@ -9,6 +9,7 @@ void main() {
         child: FintechApp(),
       ),
     );
+    await tester.pumpAndSettle();
 
     expect(find.text('NOVA'), findsOneWidget);
     expect(find.text('GLOBAL TRANSFERS'), findsOneWidget);
