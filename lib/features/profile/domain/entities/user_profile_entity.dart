@@ -15,6 +15,10 @@ class UserProfileEntity {
   final bool isBiometricEnabled;
   final bool pushNotificationsEnabled;
   final bool twoFactorEnabled;
+  final String kycStatus; // 'none', 'pending', 'approved', 'rejected'
+  final String? kycDocumentUrl;
+  final String? kycDocumentType;
+  final DateTime? kycSubmittedAt;
 
   const UserProfileEntity({
     required this.fullName,
@@ -26,7 +30,16 @@ class UserProfileEntity {
     required this.isBiometricEnabled,
     required this.pushNotificationsEnabled,
     required this.twoFactorEnabled,
+    this.kycStatus = 'none',
+    this.kycDocumentUrl,
+    this.kycDocumentType,
+    this.kycSubmittedAt,
   });
+
+  bool get isKycApproved =>
+      kycStatus == 'approved' || tier != UserTier.tier1Basic;
+  bool get isKycPending => kycStatus == 'pending';
+  bool get isKycRejected => kycStatus == 'rejected';
 
   String get tierTitle {
     switch (tier) {
@@ -49,6 +62,10 @@ class UserProfileEntity {
     bool? isBiometricEnabled,
     bool? pushNotificationsEnabled,
     bool? twoFactorEnabled,
+    String? kycStatus,
+    String? kycDocumentUrl,
+    String? kycDocumentType,
+    DateTime? kycSubmittedAt,
   }) {
     return UserProfileEntity(
       fullName: fullName ?? this.fullName,
@@ -61,6 +78,10 @@ class UserProfileEntity {
       pushNotificationsEnabled:
           pushNotificationsEnabled ?? this.pushNotificationsEnabled,
       twoFactorEnabled: twoFactorEnabled ?? this.twoFactorEnabled,
+      kycStatus: kycStatus ?? this.kycStatus,
+      kycDocumentUrl: kycDocumentUrl ?? this.kycDocumentUrl,
+      kycDocumentType: kycDocumentType ?? this.kycDocumentType,
+      kycSubmittedAt: kycSubmittedAt ?? this.kycSubmittedAt,
     );
   }
 }

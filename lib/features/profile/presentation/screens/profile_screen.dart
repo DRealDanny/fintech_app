@@ -6,11 +6,21 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/router/app_router.gr.dart';
 import '../../domain/entities/user_profile_entity.dart';
 import '../controllers/profile_controller.dart';
+import '../widgets/kyc_upload_bottom_sheet.dart';
 import '../../../../core/theme/theme_controller.dart';
 
 @RoutePage()
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
+
+  void _showKycUploadModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const KycUploadBottomSheet(),
+    );
+  }
 
   void _showLogoutDialog(BuildContext context, WidgetRef ref) {
     final surfElevated = AppColors.surfElevated(context);
@@ -161,21 +171,45 @@ class ProfileScreen extends ConsumerWidget {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8, vertical: 3),
                                   decoration: BoxDecoration(
-                                    color: AppColors.positiveGreen
-                                        .withValues(alpha: 0.15),
+                                    color: profile.isKycPending
+                                        ? AppColors.accentAmber
+                                            .withValues(alpha: 0.15)
+                                        : (profile.isKycApproved
+                                            ? AppColors.positiveGreen
+                                                .withValues(alpha: 0.15)
+                                            : AppColors.textMuted
+                                                .withValues(alpha: 0.15)),
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
-                                    children: const [
-                                      Icon(Icons.verified_rounded,
-                                          color: AppColors.positiveGreen,
-                                          size: 13),
-                                      SizedBox(width: 4),
+                                    children: [
+                                      Icon(
+                                        profile.isKycPending
+                                            ? Icons.hourglass_top_rounded
+                                            : (profile.isKycApproved
+                                                ? Icons.verified_rounded
+                                                : Icons.shield_outlined),
+                                        color: profile.isKycPending
+                                            ? AppColors.accentAmber
+                                            : (profile.isKycApproved
+                                                ? AppColors.positiveGreen
+                                                : textSub),
+                                        size: 13,
+                                      ),
+                                      const SizedBox(width: 4),
                                       Text(
-                                        'Verified Pro Member',
+                                        profile.isKycPending
+                                            ? 'KYC Under Review'
+                                            : (profile.isKycApproved
+                                                ? 'Verified Pro Member'
+                                                : 'Tier 1 Unverified'),
                                         style: TextStyle(
-                                          color: AppColors.positiveGreen,
+                                          color: profile.isKycPending
+                                              ? AppColors.accentAmber
+                                              : (profile.isKycApproved
+                                                  ? AppColors.positiveGreen
+                                                  : textSub),
                                           fontSize: 11,
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -269,7 +303,73 @@ class ProfileScreen extends ConsumerWidget {
                                   'Tier 3', profile.tier == UserTier.tier3Vip, text, border, surfElevated),
                             ],
                           ),
-                          if (profile.tier != UserTier.tier3Vip) ...[
+                          if (profile.isKycPending) ...[
+                            const SizedBox(height: 16),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: AppColors.accentAmber
+                                    .withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: AppColors.accentAmber
+                                      .withValues(alpha: 0.3),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.access_time_filled_rounded,
+                                    color: AppColors.accentAmber,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      'Identity document submitted to Supabase Vault. Compliance review is in progress.',
+                                      style: TextStyle(
+                                        color: text,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ] else if (!profile.isKycApproved) ...[
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton.icon(
+                                onPressed: () => _showKycUploadModal(context),
+                                icon: const Icon(Icons.upload_file_rounded,
+                                    size: 18),
+                                label: const Text(
+                                  'Verify Identity (Unlock Tier 2 • \$25,000/day)',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: isDark
+                                      ? AppColors.pureWhite
+                                      : AppColors.pureBlack,
+                                  foregroundColor: isDark
+                                      ? AppColors.pureBlack
+                                      : AppColors.pureWhite,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 13),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 0,
+                                ),
+                              ),
+                            ),
+                          ] else if (profile.tier != UserTier.tier3Vip) ...[
                             const SizedBox(height: 16),
                             SizedBox(
                               width: double.infinity,

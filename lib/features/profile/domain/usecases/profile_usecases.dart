@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:fpdart/fpdart.dart';
 import '../../../../core/errors/failure.dart';
 import '../entities/user_profile_entity.dart';
@@ -32,4 +33,20 @@ class UpgradeTierUseCase {
 
   Future<Either<Failure, UserProfileEntity>> call(UserTier tier) =>
       repository.upgradeTier(tier);
+}
+
+class UploadKycDocumentUseCase {
+  final ProfileRepository repository;
+  const UploadKycDocumentUseCase(this.repository);
+
+  Future<Either<Failure, UserProfileEntity>> call({
+    required Uint8List fileBytes,
+    required String fileName,
+    required String documentType,
+  }) =>
+      repository.uploadKycDocument(
+        fileBytes: fileBytes,
+        fileName: fileName,
+        documentType: documentType,
+      );
 }
