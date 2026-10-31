@@ -1,6 +1,9 @@
 // ignore_for_file: prefer_initializing_formals
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../../core/services/supabase_client.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
+import '../../data/datasources/transfer_remote_datasource.dart';
 import '../../data/datasources/transfer_local_datasource.dart';
 import '../../data/repositories/transfer_repository_impl.dart';
 import '../../domain/entities/beneficiary_entity.dart';
@@ -8,19 +11,32 @@ import '../../domain/entities/transfer_entity.dart';
 import '../../domain/repositories/transfer_repository.dart';
 import '../../domain/usecases/transfer_usecases.dart';
 
-final transferLocalDataSourceProvider = Provider<TransferLocalDataSource>((ref) {
+final transferLocalDataSourceProvider = Provider<TransferLocalDataSource>((
+  ref,
+) {
   return TransferLocalDataSourceImpl(
     secureStorage: ref.watch(secureStorageProvider),
   );
 });
 
+final transferRemoteDataSourceProvider = Provider<TransferRemoteDataSource?>((
+  ref,
+) {
+  final client = ref.watch(supabaseClientProvider);
+  if (client == null) return null;
+  return TransferRemoteDataSourceImpl(client: client);
+});
+
 final transferRepositoryProvider = Provider<TransferRepository>((ref) {
   return TransferRepositoryImpl(
     localDataSource: ref.watch(transferLocalDataSourceProvider),
+    remoteDataSource: ref.watch(transferRemoteDataSourceProvider),
   );
 });
 
-final getBeneficiariesUseCaseProvider = Provider<GetBeneficiariesUseCase>((ref) {
+final getBeneficiariesUseCaseProvider = Provider<GetBeneficiariesUseCase>((
+  ref,
+) {
   return GetBeneficiariesUseCase(ref.watch(transferRepositoryProvider));
 });
 
@@ -28,7 +44,9 @@ final executeTransferUseCaseProvider = Provider<ExecuteTransferUseCase>((ref) {
   return ExecuteTransferUseCase(ref.watch(transferRepositoryProvider));
 });
 
-final getWalletBalanceUseCaseProvider = Provider<GetWalletBalanceUseCase>((ref) {
+final getWalletBalanceUseCaseProvider = Provider<GetWalletBalanceUseCase>((
+  ref,
+) {
   return GetWalletBalanceUseCase(ref.watch(transferRepositoryProvider));
 });
 
@@ -90,10 +108,10 @@ class TransferController extends StateNotifier<TransferState> {
     required GetBeneficiariesUseCase getBeneficiariesUseCase,
     required ExecuteTransferUseCase executeTransferUseCase,
     required GetWalletBalanceUseCase getWalletBalanceUseCase,
-  })  : _getBeneficiariesUseCase = getBeneficiariesUseCase,
-        _executeTransferUseCase = executeTransferUseCase,
-        _getWalletBalanceUseCase = getWalletBalanceUseCase,
-        super(const TransferState()) {
+  }) : _getBeneficiariesUseCase = getBeneficiariesUseCase,
+       _executeTransferUseCase = executeTransferUseCase,
+       _getWalletBalanceUseCase = getWalletBalanceUseCase,
+       super(const TransferState()) {
     loadInitialData();
   }
 
@@ -107,12 +125,17 @@ class TransferController extends StateNotifier<TransferState> {
     state = state.copyWith(
       balanceCents: balance,
       beneficiaries: beneficiaries,
-      selectedBeneficiary: beneficiaries.isNotEmpty ? beneficiaries.first : null,
+      selectedBeneficiary: beneficiaries.isNotEmpty
+          ? beneficiaries.first
+          : null,
     );
   }
 
   void selectBeneficiary(BeneficiaryEntity beneficiary) {
-    state = state.copyWith(selectedBeneficiary: beneficiary, errorMessage: null);
+    state = state.copyWith(
+      selectedBeneficiary: beneficiary,
+      errorMessage: null,
+    );
   }
 
   void updateAmount(String amount) {
@@ -134,8 +157,10 @@ class TransferController extends StateNotifier<TransferState> {
   void deleteAmountKey() {
     if (state.enteredAmount.isNotEmpty) {
       state = state.copyWith(
-        enteredAmount:
-            state.enteredAmount.substring(0, state.enteredAmount.length - 1),
+        enteredAmount: state.enteredAmount.substring(
+          0,
+          state.enteredAmount.length - 1,
+        ),
         errorMessage: null,
       );
     }
@@ -187,9 +212,9 @@ class TransferController extends StateNotifier<TransferState> {
 
 final transferControllerProvider =
     StateNotifierProvider<TransferController, TransferState>((ref) {
-  return TransferController(
-    getBeneficiariesUseCase: ref.watch(getBeneficiariesUseCaseProvider),
-    executeTransferUseCase: ref.watch(executeTransferUseCaseProvider),
-    getWalletBalanceUseCase: ref.watch(getWalletBalanceUseCaseProvider),
-  );
-});
+      return TransferController(
+        getBeneficiariesUseCase: ref.watch(getBeneficiariesUseCaseProvider),
+        executeTransferUseCase: ref.watch(executeTransferUseCaseProvider),
+        getWalletBalanceUseCase: ref.watch(getWalletBalanceUseCaseProvider),
+      );
+    });

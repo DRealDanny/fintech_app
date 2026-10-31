@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 import '../../../../core/storage/hive_storage.dart';
+import '../../../../core/services/supabase_client.dart';
 import '../../data/datasources/auth_local_datasource.dart';
+import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/entities/user_auth_session.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -28,9 +30,16 @@ final authLocalDataSourceProvider = Provider<AuthLocalDataSource>((ref) {
   );
 });
 
+final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource?>((ref) {
+  final client = ref.watch(supabaseClientProvider);
+  if (client == null) return null;
+  return AuthRemoteDataSourceImpl(client: client);
+});
+
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepositoryImpl(
     localDataSource: ref.watch(authLocalDataSourceProvider),
+    remoteDataSource: ref.watch(authRemoteDataSourceProvider),
   );
 });
 
@@ -86,14 +95,24 @@ class AuthState {
     this.isLoading = false,
     this.errorMessage,
     this.phoneNumber = '',
-    this.countryCode = '+1',
+    this.countryCode = '+234',
     this.otpCode = '',
     this.pinCode = '',
     this.isBiometricAvailable = false,
     this.session,
   });
 
-  String get fullPhoneNumber => '$countryCode$phoneNumber';
+  String get fullPhoneNumber {
+    var cleanPhone = phoneNumber.replaceAll(RegExp(r'[\s\-()]'), '');
+    if (cleanPhone.startsWith('+')) {
+      return cleanPhone;
+    }
+    // Remove national prefix 0 (e.g. 080... -> 80...)
+    if (cleanPhone.startsWith('0')) {
+      cleanPhone = cleanPhone.substring(1);
+    }
+    return '$countryCode$cleanPhone';
+  }
 
   AuthState copyWith({
     bool? isLoading,

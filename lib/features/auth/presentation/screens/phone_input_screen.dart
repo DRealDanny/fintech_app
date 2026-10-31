@@ -28,14 +28,90 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
     super.dispose();
   }
 
+  static const List<Map<String, String>> _countries = [
+    {'name': 'Nigeria', 'code': '+234', 'flag': '🇳🇬'},
+    {'name': 'United States', 'code': '+1', 'flag': '🇺🇸'},
+    {'name': 'United Kingdom', 'code': '+44', 'flag': '🇬🇧'},
+    {'name': 'Ghana', 'code': '+233', 'flag': '🇬🇭'},
+    {'name': 'Kenya', 'code': '+254', 'flag': '🇰🇪'},
+    {'name': 'South Africa', 'code': '+27', 'flag': '🇿🇦'},
+    {'name': 'Canada', 'code': '+1', 'flag': '🇨🇦'},
+  ];
+
+  void _showCountryPicker() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surfaceElevated,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  'Select Country Code',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const Divider(color: AppColors.surfaceBorder, height: 1),
+              ..._countries.map((country) {
+                final isSelected =
+                    ref.watch(authControllerProvider).countryCode == country['code'];
+                return ListTile(
+                  leading: Text(country['flag']!, style: const TextStyle(fontSize: 24)),
+                  title: Text(country['name']!, style: const TextStyle(color: Colors.white)),
+                  trailing: Text(
+                    country['code']!,
+                    style: TextStyle(
+                      color: isSelected ? AppColors.primary : AppColors.textMuted,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  onTap: () {
+                    ref
+                        .read(authControllerProvider.notifier)
+                        .updateCountryCode(country['code']!);
+                    Navigator.pop(ctx);
+                  },
+                );
+              }),
+              const SizedBox(height: 12),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _onContinue() async {
-    final phone = _phoneController.text.trim();
+    var phone = _phoneController.text.trim();
+    if (phone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: AppColors.surface,
+          content: Text(
+            'Please enter your phone number',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      );
+      return;
+    }
+
     if (phone.length < 7) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           backgroundColor: AppColors.surface,
-          content: const Text(
-            'Please enter a valid phone number',
+          content: Text(
+            'Please enter a valid phone number (at least 7 digits)',
             style: TextStyle(color: Colors.white),
           ),
         ),
@@ -46,8 +122,21 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
     ref.read(authControllerProvider.notifier).updatePhoneNumber(phone);
     final success = await ref.read(authControllerProvider.notifier).sendOtp();
 
-    if (mounted && success) {
-      context.router.push(const OtpVerificationRoute());
+    if (mounted) {
+      if (success) {
+        context.router.push(const OtpVerificationRoute());
+      } else {
+        final err = ref.read(authControllerProvider).errorMessage;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: AppColors.surface,
+            content: Text(
+              err ?? 'Failed to send OTP. Please check your network or Supabase setup.',
+              style: const TextStyle(color: Colors.redAccent),
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -66,11 +155,16 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
         ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight - 16),
+                child: IntrinsicHeight(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
               // Icon Header
               Container(
                 width: 52,
@@ -128,25 +222,44 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                 child: Row(
                   children: [
                     // Country Code Dropdown Badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceElevated,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(
-                        children: [
-                          const Text('🇺🇸', style: TextStyle(fontSize: 16)),
-                          const SizedBox(width: 6),
-                          Text(
-                            authState.countryCode,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                    InkWell(
+                      onTap: _showCountryPicker,
+                      borderRadius: BorderRadius.circular(10),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceElevated,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          children: [
+                            Text(
+                              authState.countryCode == '+234'
+                                  ? '🇳🇬'
+                                  : authState.countryCode == '+44'
+                                      ? '🇬🇧'
+                                      : authState.countryCode == '+233'
+                                          ? '🇬🇭'
+                                          : authState.countryCode == '+254'
+                                              ? '🇰🇪'
+                                              : authState.countryCode == '+27'
+                                                  ? '🇿🇦'
+                                                  : '🇺🇸',
+                              style: const TextStyle(fontSize: 16),
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 6),
+                            Text(
+                              authState.countryCode,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            const Icon(Icons.arrow_drop_down, color: Colors.white70, size: 18),
+                          ],
+                        ),
                       ),
                     ),
 
@@ -163,9 +276,11 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                           fontWeight: FontWeight.w600,
                           letterSpacing: 1.2,
                         ),
-                        decoration: const InputDecoration(
-                          hintText: '555 019 2834',
-                          hintStyle: TextStyle(
+                        decoration: InputDecoration(
+                          hintText: authState.countryCode == '+234'
+                              ? '080 1234 5678'
+                              : '555 019 2834',
+                          hintStyle: const TextStyle(
                             color: AppColors.textMuted,
                             fontSize: 16,
                           ),
@@ -186,6 +301,26 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
               ],
 
               const Spacer(),
+
+              // Quick Fill Test Button
+              Center(
+                child: TextButton.icon(
+                  onPressed: () {
+                    _phoneController.text = '5550192834';
+                    _onContinue();
+                  },
+                  icon: const Icon(Icons.bolt_rounded, color: AppColors.primary, size: 18),
+                  label: const Text(
+                    '⚡ Use Demo Number (Quick Test)',
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
 
               // Security Trust Note
               Row(
@@ -247,8 +382,12 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-            ],
-          ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

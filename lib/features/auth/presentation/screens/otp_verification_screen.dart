@@ -55,6 +55,14 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
 
   String get _currentOtp => _controllers.map((c) => c.text).join();
 
+  void _autoFillTestOtp() {
+    const testCode = '123456';
+    for (int i = 0; i < 6; i++) {
+      _controllers[i].text = testCode[i];
+    }
+    _onVerify();
+  }
+
   void _onVerify() async {
     final otp = _currentOtp;
     if (otp.length != 6) {
@@ -236,6 +244,22 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                           ),
                         ),
                       ),
+              ),
+
+              // Quick Dev Bypass Button
+              Center(
+                child: TextButton.icon(
+                  onPressed: _autoFillTestOtp,
+                  icon: const Icon(Icons.bolt_rounded, color: AppColors.primary, size: 18),
+                  label: const Text(
+                    '⚡ Auto-Fill Code (123456)',
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
 
               const Spacer(),
