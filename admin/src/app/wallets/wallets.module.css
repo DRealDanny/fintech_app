@@ -1,0 +1,166 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.topRow {
+  display: grid;
+  grid-template-columns: 1.4fr 1.6fr;
+  gap: 16px;
+}
+
+.balanceCard {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cardsOverviewCard {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.cardFanStack {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 140px;
+  position: relative;
+}
+
+.stackedCard1 {
+  position: absolute;
+  width: 220px;
+  height: 115px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #1F382B 0%, #112018 100%);
+  color: white;
+  box-shadow: 0 12px 24px -6px rgba(17, 32, 24, 0.35);
+  transform: rotate(-8deg) translateX(-40px);
+  padding: 14px;
+  z-index: 1;
+}
+
+.stackedCard2 {
+  position: absolute;
+  width: 220px;
+  height: 115px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #E2ECE5 0%, #CCD9CF 100%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 20px -4px rgba(0, 0, 0, 0.1);
+  transform: rotate(2deg) translateY(-8px);
+  padding: 14px;
+  z-index: 2;
+}
+
+.stackedCard3 {
+  position: absolute;
+  width: 220px;
+  height: 115px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #FFFFFF 0%, #F5F6F3 100%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 16px 30px -4px rgba(0, 0, 0, 0.12);
+  transform: rotate(10deg) translateX(40px);
+  padding: 14px;
+  z-index: 3;
+}
+
+.cardChipsRow {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+}
+
+.cardMiniChip {
+  flex: 1;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Transfers Table Card */
+.transfersSection {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.transfersHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filterPills {
+  display: flex;
+  gap: 6px;
+  background: var(--bg-muted);
+  padding: 4px;
+  border-radius: var(--radius-full);
+}
+
+.filterPill {
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.filterPillActive {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.td {
+  padding: 16px 14px;
+  font-size: 13px;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.tr:last-child .td {
+  border-bottom: none;
+}
+
