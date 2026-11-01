@@ -21,7 +21,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 130px;
+  height: 125px;
   position: relative;
 }
 
@@ -41,32 +41,14 @@
 }
 
 .metricValue {
-  font-size: 30px;
-  font-weight: 700;
+  font-size: 28px;
+  font-weight: 800;
   color: var(--text-primary);
   letter-spacing: -0.02em;
   line-height: 1;
 }
 
-/* Mini Bar Chart in Card 1 */
-.miniBars {
-  display: flex;
-  align-items: flex-end;
-  gap: 4px;
-  height: 28px;
-}
-
-.miniBar {
-  width: 6px;
-  background: var(--bg-muted);
-  border-radius: 3px;
-}
-
-.miniBarActive {
-  background: var(--primary-forest);
-}
-
-/* Green Highlight Card (Card 4) */
+/* Green Highlight Card */
 .forestCard {
   background: var(--primary-forest) !important;
   color: var(--text-on-dark) !important;
@@ -86,15 +68,32 @@
   height: 28px;
 }
 
-/* Middle Row: Balance (Left), Earnings Donut (Middle), Profile (Right) */
+/* Mini Bar Chart */
+.miniBars {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 24px;
+}
+
+.miniBar {
+  width: 5px;
+  background: var(--bg-muted);
+  border-radius: 3px;
+}
+
+.miniBarActive {
+  background: var(--primary-forest);
+}
+
+/* Middle Row: Volume Chart (Left), KYC Donut (Right) */
 .middleGrid {
   display: grid;
-  grid-template-columns: 2fr 1.3fr 1fr;
+  grid-template-columns: 2fr 1fr;
   gap: 16px;
 }
 
-/* Balance Card */
-.balanceCard {
+.chartCard {
   background: var(--bg-card);
   border-radius: var(--radius-xl);
   border: 1px solid var(--border-card);
@@ -102,53 +101,22 @@
   padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
-.balanceTop {
+.chartTop {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.statPair {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.statLabel {
-  font-size: 12px;
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-.statRow {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.statAmount {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.chartContainer {
-  width: 100%;
-  height: 140px;
-  position: relative;
-}
-
 .chartSvg {
   width: 100%;
-  height: 100%;
+  height: 150px;
   overflow: visible;
 }
 
-/* Earnings Donut Card */
-.earningsCard {
+.donutCard {
   background: var(--bg-card);
   border-radius: var(--radius-xl);
   border: 1px solid var(--border-card);
@@ -188,8 +156,8 @@
 
 .donutLegend {
   display: flex;
-  justify-content: center;
-  gap: 16px;
+  flex-direction: column;
+  gap: 8px;
   font-size: 12px;
   color: var(--text-secondary);
 }
@@ -197,7 +165,13 @@
 .legendItem {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: space-between;
+}
+
+.legendLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .legendDot {
@@ -206,8 +180,14 @@
   border-radius: 50%;
 }
 
-/* Profile Card (Right) */
-.profileCard {
+/* Bottom Row: Pending KYC Queue (Left), Live Ledger (Right) */
+.bottomGrid {
+  display: grid;
+  grid-template-columns: 1.2fr 1.8fr;
+  gap: 16px;
+}
+
+.sectionCard {
   background: var(--bg-card);
   border-radius: var(--radius-xl);
   border: 1px solid var(--border-card);
@@ -215,176 +195,44 @@
   padding: 24px;
   display: flex;
   flex-direction: column;
+  gap: 16px;
+}
+
+.sectionHeader {
+  display: flex;
   align-items: center;
-  text-align: center;
-  justify-content: center;
+  justify-content: space-between;
+}
+
+.kycQuickList {
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
 
-.bigAvatar {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #2E503E 0%, #172C21 100%);
-  color: white;
+.kycQuickItem {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  font-weight: 800;
-}
-
-.profileName {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.profileEmail {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-/* Bottom Row: Cards in Wallet (Left), Transfers List (Middle), Security (Right) */
-.bottomGrid {
-  display: grid;
-  grid-template-columns: 1.5fr 1.8fr 1fr;
-  gap: 16px;
-}
-
-/* 3D Payment Cards Card */
-.cardsCard {
-  background: var(--bg-card);
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--border-card);
-  box-shadow: var(--shadow-card);
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
   justify-content: space-between;
-}
-
-.cardsVisualStack {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 120px;
-  perspective: 800px;
-}
-
-.creditCardMock {
-  width: 220px;
-  height: 110px;
+  padding: 12px;
+  background: var(--bg-elevated);
   border-radius: 14px;
-  background: linear-gradient(135deg, #FFFFFF 0%, #E8EFEA 100%);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 10px 25px -4px rgba(31, 56, 43, 0.15);
-  transform: rotate(-4deg) skewX(2deg);
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: transform 0.3s ease;
-}
-
-.creditCardMock:hover {
-  transform: rotate(0deg) scale(1.03);
-}
-
-/* Transfers List Card */
-.transfersCard {
-  background: var(--bg-card);
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--border-card);
-  box-shadow: var(--shadow-card);
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
 }
 
 .transfersList {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .transferItem {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 0;
+  padding: 10px 0;
   border-bottom: 1px solid var(--border-light);
 }
 
 .transferItem:last-child {
   border-bottom: none;
 }
-
-.transferLeft {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.transferIcon {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--bg-muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-primary);
-}
-
-.transferTitle {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.transferDate {
-  font-size: 11px;
-  color: var(--text-secondary);
-}
-
-.transferAmount {
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.amountPositive {
-  color: var(--status-positive);
-}
-
-.amountNegative {
-  color: var(--text-primary);
-}
-
-/* Security Card */
-.securityCard {
-  background: var(--bg-card);
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--border-card);
-  box-shadow: var(--shadow-card);
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  justify-content: center;
-  gap: 14px;
-}
-
-.securityIconWrap {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: var(--accent-sage);
-  color: var(--primary-forest);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-

@@ -1,104 +1,200 @@
 .sidebar {
-  width: 76px;
+  width: 240px;
+  min-width: 240px;
   background: var(--bg-sidebar);
-  border-radius: 36px;
+  border-radius: 28px;
   border: 1px solid var(--border-card);
   box-shadow: var(--shadow-sidebar);
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: space-between;
-  padding: 24px 0;
+  padding: 24px 16px;
   position: sticky;
   top: 16px;
   height: calc(100vh - 32px);
   z-index: 50;
+  transition: all 0.2s ease;
 }
 
 .topSection {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 36px;
+  gap: 28px;
   width: 100%;
 }
 
-.logoButton {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-full);
+.brandArea {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 8px;
+}
+
+.logoIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--accent-sage);
+  color: var(--primary-forest);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--primary-forest);
-  background: transparent;
+  flex-shrink: 0;
   transition: transform 0.2s ease;
 }
 
-.logoButton:hover {
-  transform: rotate(25deg);
+.brandArea:hover .logoIcon {
+  transform: rotate(20deg);
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+}
+
+.brandTitle {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.brandSubtitle {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  text-transform: uppercase;
 }
 
 .navGroup {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
   width: 100%;
-  align-items: center;
 }
 
 .navItem {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-full);
   color: var(--text-secondary);
-  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
   position: relative;
 }
 
 .navItem:hover {
-  color: var(--text-primary);
   background: var(--bg-muted);
+  color: var(--text-primary);
 }
 
 .navItemActive {
-  background: var(--primary-forest);
+  background: var(--primary-forest) !important;
   color: var(--text-on-dark) !important;
+  box-shadow: 0 4px 14px rgba(31, 56, 43, 0.2);
 }
 
 .navItemActive:hover {
   background: var(--primary-forest-hover) !important;
 }
 
+.navLabel {
+  flex: 1;
+  white-space: nowrap;
+}
+
+.navBadge {
+  background: var(--status-pending-bg);
+  color: var(--status-pending);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+}
+
+.navBadgeActive {
+  background: rgba(255, 255, 255, 0.25);
+  color: var(--text-on-dark);
+}
+
 .bottomSection {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 16px;
+  gap: 14px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-light);
 }
 
-.userAvatar {
-  width: 42px;
-  height: 42px;
-  border-radius: var(--radius-full);
+.statusCard {
+  background: var(--bg-elevated);
+  border-radius: 14px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--status-positive);
+  box-shadow: 0 0 0 3px rgba(31, 138, 77, 0.2);
+}
+
+.statusLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.statusSub {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+.adminProfile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   background: linear-gradient(135deg, #2E503E 0%, #172C21 100%);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: 800;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.adminDetails {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.adminName {
+  font-size: 13px;
   font-weight: 700;
-  font-size: 14px;
-  border: 2px solid white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: transform 0.2s ease;
+  color: var(--text-primary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
-.userAvatar:hover {
-  transform: scale(1.05);
+.adminRole {
+  font-size: 10px;
+  color: var(--text-muted);
 }
-
